@@ -23,23 +23,33 @@ export const TasksApp = () => {
     const newTodo: Todo = {
         id: Date.now(),
         text: inputValue.trim(),
-        completed: false
-    }  
+        completed: false,
+    };
     setTodos([...todos,newTodo]);
   };
 
   const toggleTodo = (id: number) => {
-    console.log('Cambiar de true a false', id);
+   const updatedTodos = todos.map(todo => {
+    if(todo.id === id){
+        // Actuliza el campo completed a su opuesto
+        return {...todo, completed: !todo.completed}
+    }
+    return todo;
+   })
+
+   setTodos(updatedTodos);
 
   };
 
   const deleteTodo = (id: number) => {   
-   const updatedTodos = todos.filter(t=>{ t.id !== id});
+   const updatedTodos = todos.filter(t=> t.id != id);
    setTodos(updatedTodos);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    console.log('Presiono enter');
+    if(e.key === 'Enter'){
+        addTodo();
+    }
 
   };
 
