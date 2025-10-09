@@ -1,4 +1,4 @@
-import React, { useRef, type HtmlHTMLAttributes } from 'react'
+import { useRef } from 'react'
 
 export const FocusScreen = () => {
 
