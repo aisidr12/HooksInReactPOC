@@ -1,4 +1,3 @@
-
 interface Todo {
   id: number;
   text: string;
@@ -17,15 +16,18 @@ export type TaskAction =
   | { type: "TOGGLE_TODO"; payload: number }
   | { type: "DELETE_TODO"; payload: number };
 
-
-  
 export const getTaskInitialState = (): TaskState => {
+  const localStorateState = localStorage.getItem("tasks-state");
+
+  if (!localStorateState) {
     return {
-    todos: [],
-    lenght: 0,
-    completed: 0,
-    pending: 0,
-    }
+      todos: [],
+      lenght: 0,
+      completed: 0,
+      pending: 0,
+    };
+  }
+  return JSON.parse(localStorateState);
 };
 
 // Cada accion debe retornar un nuevo estado
@@ -46,7 +48,6 @@ export const taskReducer = (
         todos: [...state.todos, newTodo],
         lenght: state.lenght + 1,
         pending: state.pending + 1,
-    
       };
     }
     case "TOGGLE_TODO":
@@ -65,17 +66,17 @@ export const taskReducer = (
         pending: updatedTodos.filter((t) => !t.completed).length,
       };
 
-    case 'DELETE_TODO': {
-        const currenTodos = state.todos.filter((todo) => todo.id !== action.payload);;
+    case "DELETE_TODO": {
+      const currenTodos = state.todos.filter(
+        (todo) => todo.id !== action.payload
+      );
       return {
         ...state,
         todos: currenTodos,
         lenght: currenTodos.length,
-        completed: currenTodos.filter(t => t.completed).length,
-        pending: currenTodos.filter(t => !t.completed).length,
-
+        completed: currenTodos.filter((t) => t.completed).length,
+        pending: currenTodos.filter((t) => !t.completed).length,
       };
-    
     }
     default:
       return state;
