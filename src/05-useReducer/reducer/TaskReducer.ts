@@ -10,6 +10,7 @@ interface TaskState {
   todos: Todo[];
   lenght: number;
   completed: number;
+  pending: number;
 }
 
 export type TaskAction =
@@ -33,6 +34,9 @@ export const taskReducer = (
       return {
         ...state,
         todos: [...state.todos, newTodo],
+        lenght: state.lenght + 1,
+        pending: state.pending + 1,
+    
       };
     }
     case "TOGGLE_TODO":
@@ -47,13 +51,22 @@ export const taskReducer = (
       return {
         ...state,
         todos: updatedTodos,
+        completed: updatedTodos.filter((t) => t.completed).length,
+        pending: updatedTodos.filter((t) => !t.completed).length,
       };
 
-    case "DELETE_TODO":
+    case 'DELETE_TODO': {
+        const currenTodos = state.todos.filter((todo) => todo.id !== action.payload);;
       return {
         ...state,
-        todos: state.todos.filter((todo) => todo.id !== action.payload),
+        todos: currenTodos,
+        lenght: currenTodos.length,
+        completed: currenTodos.filter(t => t.completed).length,
+        pending: currenTodos.filter(t => !t.completed).length,
+
       };
+    
+    }
     default:
       return state;
   }
