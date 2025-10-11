@@ -1,3 +1,5 @@
+import z from "zod";
+
 interface Todo {
   id: number;
   text: string;
@@ -16,6 +18,24 @@ export type TaskAction =
   | { type: "TOGGLE_TODO"; payload: number }
   | { type: "DELETE_TODO"; payload: number };
 
+
+  const TodoSchema = z.object({
+    id: z.number(),
+    text: z.string(),
+    completed: z.boolean()
+  });
+
+
+  const TaskStateSchema = z.object({
+    todos: z.array(TodoSchema),
+    lenght: z.number(),
+    completed: z.number(),
+    pending: z.number()
+  });
+
+
+
+  
 export const getTaskInitialState = (): TaskState => {
   const localStorateState = localStorage.getItem("tasks-state");
 
@@ -26,8 +46,22 @@ export const getTaskInitialState = (): TaskState => {
       completed: 0,
       pending: 0,
     };
+  
   }
-  return JSON.parse(localStorateState);
+// validar mediante zod, cuando haya data 
+
+//SAFE PARSE ES SOLO PARA VALIDAR, UNA VEZ PASADO ESO, HAY QUE PARSEAR EL LOCALSTORAGE
+const resultado = TaskStateSchema.safeParse(JSON.parse(localStorateState));
+if(resultado.error) {
+   return {
+      todos: [],
+      lenght: 0,
+      completed: 0,
+      pending: 0,
+    };
+  }
+
+  return resultado.data;
 };
 
 // Cada accion debe retornar un nuevo estado
