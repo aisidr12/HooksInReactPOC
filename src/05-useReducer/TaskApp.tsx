@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 
 import { Plus, Trash2, Check } from 'lucide-react';
 
@@ -6,44 +6,28 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+import { getTaskInitialState, taskReducer } from './reducer/TaskReducer';
 
 export const TasksApp = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  //Reemplazamos useState por useReducer
+  const [state, dispatch] = useReducer(taskReducer, getTaskInitialState());
+  //const [todos, setTodos] = useState<Todo[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const todos = state.todos;  
+  
 
   const addTodo = () => {
     if(inputValue.length ===0 ) return;
-
-    const newTodo: Todo = {
-        id: Date.now(),
-        text: inputValue.trim(),
-        completed: false,
-    };
-    setTodos([...todos,newTodo]);
+    dispatch({type:'ADD_TODO',payload: inputValue});
+    setInputValue('');
   };
 
   const toggleTodo = (id: number) => {
-   const updatedTodos = todos.map(todo => {
-    if(todo.id === id){
-        // Actuliza el campo completed a su opuesto
-        return {...todo, completed: !todo.completed}
-    }
-    return todo;
-   })
-
-   setTodos(updatedTodos);
-
+    dispatch({type:'TOGGLE_TODO',payload:id})
   };
 
   const deleteTodo = (id: number) => {   
-   const updatedTodos = todos.filter(t=> t.id != id);
-   setTodos(updatedTodos);
+    dispatch({type:'DELETE_TODO',payload:id})
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -55,7 +39,7 @@ export const TasksApp = () => {
 
   const completedCount = todos.filter((todo) => todo.completed).length;
   const totalCount = todos.length;
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="mx-auto max-w-2xl">

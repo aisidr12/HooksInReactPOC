@@ -1,4 +1,3 @@
-import { todo } from "node:test";
 
 interface Todo {
   id: number;
@@ -17,6 +16,17 @@ export type TaskAction =
   | { type: "ADD_TODO"; payload: string }
   | { type: "TOGGLE_TODO"; payload: number }
   | { type: "DELETE_TODO"; payload: number };
+
+
+  
+export const getTaskInitialState = (): TaskState => {
+    return {
+    todos: [],
+    lenght: 0,
+    completed: 0,
+    pending: 0,
+    }
+};
 
 // Cada accion debe retornar un nuevo estado
 export const taskReducer = (
