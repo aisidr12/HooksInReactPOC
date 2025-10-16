@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { SkipForward, Play } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { set } from 'zod';
 
 const GAME_WORDS = [
@@ -63,34 +64,52 @@ export const ScrambleWords = () => {
     // Implementar lógica de juego
     console.log('Intento de adivinanza:', guess, currentWord);
     if(guess === (currentWord)){
-        setPoints(points + 1);     
-        setScrambledWord(scrambleWord(words[0]));
+      const newWords = words.slice(1);
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+    
+        })
+
+        setPoints(points + 1); 
         setGuess('');
-    }else{
+        //quitamos palabra ya adivinada
+        setWords(newWords);
+        setCurrentWord(words[0]);
+        setScrambledWord(scrambleWord(newWords[0]));
+        return
+    }
+
       setErrorCounter(errorCounter+1);
-      setMaxAllowErrors(3);
-      if( maxAllowErrors > errorCounter){
+      setGuess('');
+      if( errorCounter + 1 >= maxAllowErrors){
         setIsGameOver(true);
       }
-    }
+    
 
   };
 
   const handleSkip = () => {
-    console.log('Palabra saltada');
-    setMaxSkips(3);
-    if(skipCounter < maxSkips){
+    if(skipCounter >= maxSkips) return;
+    const updatedWords = words.slice(1);
     setSkipCounter(skipCounter+1);
-    }   
+    setWords(updatedWords);
+    setCurrentWord(updatedWords[0]);
+    setScrambledWord(scrambleWord(updatedWords[0]));
+    setGuess('');
   };
 
   const handlePlayAgain = () => {
+    const newArray = shuffleArray(GAME_WORDS);
     console.log('Jugar de nuevo');
     setSkipCounter(0);
     setErrorCounter(0);
     setPoints(0);
-    setWords(shuffleArray(GAME_WORDS));
+    setCurrentWord(words[0]);
+    setWords(newArray);
     setIsGameOver(false);
+    setScrambledWord(scrambleWord(newArray[0]));
 };
 
   //! Si ya no hay palabras para jugar, se muestra el mensaje de fin de juego
